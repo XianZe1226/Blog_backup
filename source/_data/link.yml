@@ -1,0 +1,30 @@
+- class_name: 框架
+  link_list:
+    - name: Hexo
+      link: https://hexo.io/zh-tw/
+      avatar: https://d33wubrfki0l68.cloudfront.net/6657ba50e702d84afb32fe846bed54fba1a77add/827ae/logo.svg
+      descr: 快速、简单且强大的网志框架
+      
+- class_name: 主题
+  link_list:
+    - name: Butterfly
+      link: https://butterfly.js.org/
+      avatar: https://butterfly.js.org/img/butterfly-icon.png
+      descr: 好！
+    
+
+- class_name: 我的社交账号
+  class_desc: 谢谢关注
+  link_list:
+    - name: bilibili
+      link: https://space.bilibili.com/208651111/dynamic
+      avatar: https://i0.hdslb.com/bfs/static/jinkela/long/images/favicon.ico
+      descr: b站
+      
+- class_name: 友情链接
+  class_desc: 亲爱的老师们
+  link_list:
+    - name: 丛雨老师
+      link: https://luoshuitianyi.love/
+      avatar: https://luoshuitianyi.love/img/Murasame-icon.png
+
