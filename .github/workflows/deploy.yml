@@ -31,6 +31,9 @@ jobs:
       - name: Clean and Generate
         run: npx hexo clean && npx hexo generate
 
+      - name: Remove .gitignore from public
+        run: rm -f public/.gitignore
+
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
@@ -38,3 +41,5 @@ jobs:
           publish_dir: ./public
           publish_branch: gh-pages
           force_orphan: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
