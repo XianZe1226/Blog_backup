@@ -6,3 +6,19 @@ node_modules/
 public/
 .deploy*/
 _multiconfig.yml
+
+# Hexo generated files
+index.html
+archives/
+categories/
+tags/
+css/
+js/
+images/
+img/
+link/
+shuoshuo/
+photo/
+photogroup/
+search.xml
+404.html
