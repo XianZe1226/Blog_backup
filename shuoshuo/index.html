@@ -7,7 +7,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://avatars.githubusercontent.com/u/217691847?v=4">
 <meta property="article:published_time" content="2025-09-27T04:15:43.000Z">
-<meta property="article:modified_time" content="2026-06-30T14:47:00.105Z">
+<meta property="article:modified_time" content="2026-06-30T16:33:11.084Z">
 <meta property="article:author" content="籼泽">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://avatars.githubusercontent.com/u/217691847?v=4"><script type="application/ld+json"></script><link rel="shortcut icon" href="/Blog_backup/images/logo.jpg"><link rel="canonical" href="https://xianze1226.github.io/Blog_backup/shuoshuo/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/Blog_backup/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
@@ -202,16 +202,27 @@
   let inputEventsAttached = false // Flag to mark if input event listeners have been added
 
   const renderData = (dataSlice) => {
+    // 读取当前访客的点赞记录
+    const getLikedKeys = () => {
+      try {
+        return JSON.parse(localStorage.getItem('shuoshuo_likes') || '{}')
+      } catch(e) { return {} }
+    }
+    const likedKeys = getLikedKeys()
+
     const content = dataSlice.map(item => {
       const formattedDate = formatToTimeZone(item.date)
       const tags = item.tags && item.tags.map(tag => `<span class="shuoshuo-tag">${tag}</span>`).join('') || ''
-      const commentButton = item.key && false
-        ? `<div class="shuoshuo-comment-btn" onclick="addCommentToShuoshuo(event)">
-            <i class="fa-solid fa-comments"></i>
+      const itemKey = item.key || ''
+      const baseLikes = item.likes || 0
+      const hasLiked = !!(itemKey && likedKeys[itemKey])
+
+      // 点赞按钮：已赞则实心红心，未赞则空心
+      const likeButton = itemKey
+        ? `<div class="shuoshuo-like-btn${hasLiked ? ' liked' : ''}" data-key="${itemKey}" data-base-likes="${baseLikes}" onclick="window.shuoshuoLike(event)">
+            <i class="${hasLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'}"></i>
+            <span class="shuoshuo-like-count">${baseLikes + (hasLiked ? 1 : 0)}</span>
           </div>`
-        : ''
-      const commentContainer = item.key
-        ? `<div class="shuoshuo-comment no-comment" data-key="${item.key}"></div>`
         : ''
 
       return `
@@ -231,10 +242,9 @@
             <div class="shuoshuo-content">${item.content}</div>
             <div class="shuoshuo-footer ${tags ? 'flex-between' : 'flex-end'}">
               ${tags ? `<div class="shuoshuo-tags">${tags}</div>` : ''}
-              ${commentButton}
+              ${likeButton}
             </div>
           </div>
-          ${commentContainer}
         </div>`
     }).join('')
 
@@ -319,6 +329,29 @@
     renderNavigation()
   }
 
+  window.shuoshuoLike = (e) => {
+    const btn = e.currentTarget
+    if (!btn || btn.classList.contains('liked')) return
+
+    const key = btn.getAttribute('data-key')
+    const baseLikes = parseInt(btn.getAttribute('data-base-likes')) || 0
+
+    // 记录到 localStorage
+    let likedKeys = {}
+    try {
+      likedKeys = JSON.parse(localStorage.getItem('shuoshuo_likes') || '{}')
+    } catch(e) {}
+    likedKeys[key] = true
+    localStorage.setItem('shuoshuo_likes', JSON.stringify(likedKeys))
+
+    // 更新 UI
+    btn.classList.add('liked')
+    const icon = btn.querySelector('i')
+    if (icon) icon.className = 'fa-solid fa-heart'
+    const countEl = btn.querySelector('.shuoshuo-like-count')
+    if (countEl) countEl.textContent = baseLikes + 1
+  }
+
   window.shuoshuoPrevPage = () => {
     if (currentPage > 1) {
       currentPage--
@@ -394,7 +427,7 @@
         const response = await fetch('/Blog_backup/')
         originData = await response.json()
       } else {
-        originData = []
+        originData = [{"author":"籼泽","avatar":"/images/logo.jpg","date":"2026-06-30 22:00:00","key":"key-test-1","likes":0,"content":"<p>今天把 A7M5 和适马 24-70 二代的开箱文完善好了，查了不少资料，整理完觉得这套搭配确实不错，往后多出门拍一拍。</p>\n","tags":["摄影","Sony"]}]
       }
 
       data = filterDataByLimit(sortDataByDate(originData), limitConfig)
@@ -414,8 +447,8 @@
             
           </div>
           <ul class="card-category-list" id="aside-cat-list">
-            <li class="card-category-list-item "><a class="card-category-list-link" href="/Blog_backup/categories/Blog/"><span class="card-category-list-name">Blog</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/Blog_backup/categories/%E7%94%9F%E6%B4%BB/"><span class="card-category-list-name">生活</span><span class="card-category-list-count">1</span></a></li>
-          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/Blog_backup/tags/Hexo/" style="font-size: 1.1em; color: #999">Hexo</a> <a href="/Blog_backup/tags/%E7%B4%A2%E5%B0%BC/" style="font-size: 1.1em; color: #999">索尼</a> <a href="/Blog_backup/tags/Butterfly/" style="font-size: 1.1em; color: #999">Butterfly</a> <a href="/Blog_backup/tags/%E9%80%82%E9%A9%AC/" style="font-size: 1.1em; color: #999">适马</a> <a href="/Blog_backup/tags/%E6%91%84%E5%BD%B1/" style="font-size: 1.1em; color: #999">摄影</a></div></div><div class="card-widget card-archives">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/Blog_backup/categories/%E6%8A%80%E6%9C%AF/"><span class="card-category-list-name">技术</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/Blog_backup/categories/%E6%91%84%E5%BD%B1/"><span class="card-category-list-name">摄影</span><span class="card-category-list-count">1</span></a></li>
+          </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/Blog_backup/tags/Hexo/" style="font-size: 1.1em; color: #999">Hexo</a> <a href="/Blog_backup/tags/%E7%B4%A2%E5%B0%BC/" style="font-size: 1.1em; color: #999">索尼</a> <a href="/Blog_backup/tags/%E9%80%82%E9%A9%AC/" style="font-size: 1.1em; color: #999">适马</a> <a href="/Blog_backup/tags/Butterfly/" style="font-size: 1.1em; color: #999">Butterfly</a> <a href="/Blog_backup/tags/%E6%91%84%E5%BD%B1/" style="font-size: 1.1em; color: #999">摄影</a></div></div><div class="card-widget card-archives">
     <div class="item-headline">
       <i class="fas fa-archive"></i>
       <span>归档</span>
@@ -443,4 +476,4 @@
         </li>
       
     </ul>
-  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站信息</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">2</div></div><div class="webinfo-item"><div class="item-name">运行时间 :</div><div class="item-count" id="runtimeshow" data-publishDate="2025-09-26T21:46:00.000Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总浏览量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-06-30T14:47:13.035Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer" style="background: transparent;"><div class="footer-flex"><div class="footer-flex-items"><div class="footer-flex-item"><div class="footer-flex-title">一些别的</div><div class="footer-flex-content"><a href="https://github.com/XianZe1226/img_bed" target="_blank" title="图库">图库</a><a href="/Blog_backup/messageboard/" target="_blank" title="留言板">留言板</a><a href="/Blog_backup/talking/" target="_blank" title="说说">说说</a><a href="https://luoshuitianyi.love/" target="_blank" title="友链">友链</a></div></div></div><div class="footer-flex-items"><div class="footer-flex-item"><div class="footer-flex-title">框架</div><div class="footer-flex-content"><a href="https://hexo.io/zh-cn/" target="_blank" title="Hexo">Hexo</a><a href="https://butterfly.js.org/" target="_blank" title="Butterfly">Butterfly</a></div></div></div><div class="footer-flex-items"><div class="footer-flex-item"><div class="footer-flex-title">v我50</div><div class="footer-flex-content"><div><img src='https://cdn.jsdelivr.net/gh/XianZe1226/img_bed/alipay.jpg' alt='XianZe' width='100px' height='100px'></div></div></div></div></div><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By 籼泽</span><span class="framework-info"><span class="footer-separator">|</span><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.0.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.0</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/Blog_backup/js/utils.js"></script><script src="/Blog_backup/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/Blog_backup/js/search/local-search.js"></script></div></div></body></html>
+  </div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站信息</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">2</div></div><div class="webinfo-item"><div class="item-name">运行时间 :</div><div class="item-count" id="runtimeshow" data-publishDate="2025-09-26T21:46:00.000Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总浏览量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-06-30T16:33:23.845Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer" style="background: transparent;"><div class="footer-flex"><div class="footer-flex-items"><div class="footer-flex-item"><div class="footer-flex-title">一些别的</div><div class="footer-flex-content"><a href="/Blog_backup/photo/" target="_blank" title="图库">图库</a><a href="/Blog_backup/messageboard/" target="_blank" title="留言板">留言板</a><a href="/Blog_backup/shuoshuo/" target="_blank" title="说说">说说</a><a href="https://luoshuitianyi.love/" target="_blank" title="友链">友链</a></div></div></div><div class="footer-flex-items"><div class="footer-flex-item"><div class="footer-flex-title">框架</div><div class="footer-flex-content"><a href="https://hexo.io/zh-cn/" target="_blank" title="Hexo">Hexo</a><a href="https://butterfly.js.org/" target="_blank" title="Butterfly">Butterfly</a></div></div></div><div class="footer-flex-items"><div class="footer-flex-item"><div class="footer-flex-title">v我50</div><div class="footer-flex-content"><div><img src='https://cdn.jsdelivr.net/gh/XianZe1226/img_bed/alipay.jpg' alt='XianZe' width='100px' height='100px'></div></div></div></div></div><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By 籼泽</span><span class="framework-info"><span class="footer-separator">|</span><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.0.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.0</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/Blog_backup/js/utils.js"></script><script src="/Blog_backup/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/Blog_backup/js/search/local-search.js"></script></div></div></body></html>
