@@ -14,8 +14,6 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
-        with:
-          submodules: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -31,15 +29,12 @@ jobs:
       - name: Clean and Generate
         run: npx hexo clean && npx hexo generate
 
-      - name: Remove .gitignore from public
-        run: rm -f public/.gitignore
+      - name: Verify generated files
+        run: ls -la public/css/ && ls -la public/js/ && ls -la public/img/
 
       - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-          publish_branch: gh-pages
-          force_orphan: true
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
+          branch: gh-pages
+          folder: public
+          clean: true
