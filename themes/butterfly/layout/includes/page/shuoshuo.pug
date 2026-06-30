@@ -88,16 +88,27 @@
         let inputEventsAttached = false // Flag to mark if input event listeners have been added
 
         const renderData = (dataSlice) => {
+          // 读取当前访客的点赞记录
+          const getLikedKeys = () => {
+            try {
+              return JSON.parse(localStorage.getItem('shuoshuo_likes') || '{}')
+            } catch(e) { return {} }
+          }
+          const likedKeys = getLikedKeys()
+
           const content = dataSlice.map(item => {
             const formattedDate = formatToTimeZone(item.date)
             const tags = item.tags && item.tags.map(tag => `<span class="shuoshuo-tag">${tag}</span>`).join('') || ''
-            const commentButton = item.key && !{commentsJsLoad}
-              ? `<div class="shuoshuo-comment-btn" onclick="addCommentToShuoshuo(event)">
-                  <i class="fa-solid fa-comments"></i>
+            const itemKey = item.key || ''
+            const baseLikes = item.likes || 0
+            const hasLiked = !!(itemKey && likedKeys[itemKey])
+
+            // 点赞按钮：已赞则实心红心，未赞则空心
+            const likeButton = itemKey
+              ? `<div class="shuoshuo-like-btn${hasLiked ? ' liked' : ''}" data-key="${itemKey}" data-base-likes="${baseLikes}" onclick="window.shuoshuoLike(event)">
+                  <i class="${hasLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'}"></i>
+                  <span class="shuoshuo-like-count">${baseLikes + (hasLiked ? 1 : 0)}</span>
                 </div>`
-              : ''
-            const commentContainer = item.key
-              ? `<div class="shuoshuo-comment no-comment" data-key="${item.key}"></div>`
               : ''
 
             return `
@@ -117,10 +128,9 @@
                   <div class="shuoshuo-content">${item.content}</div>
                   <div class="shuoshuo-footer ${tags ? 'flex-between' : 'flex-end'}">
                     ${tags ? `<div class="shuoshuo-tags">${tags}</div>` : ''}
-                    ${commentButton}
+                    ${likeButton}
                   </div>
                 </div>
-                ${commentContainer}
               </div>`
           }).join('')
 
@@ -203,6 +213,29 @@
           const pageData = data.slice(start, end)
           renderData(pageData)
           renderNavigation()
+        }
+
+        window.shuoshuoLike = (e) => {
+          const btn = e.currentTarget
+          if (!btn || btn.classList.contains('liked')) return
+
+          const key = btn.getAttribute('data-key')
+          const baseLikes = parseInt(btn.getAttribute('data-base-likes')) || 0
+
+          // 记录到 localStorage
+          let likedKeys = {}
+          try {
+            likedKeys = JSON.parse(localStorage.getItem('shuoshuo_likes') || '{}')
+          } catch(e) {}
+          likedKeys[key] = true
+          localStorage.setItem('shuoshuo_likes', JSON.stringify(likedKeys))
+
+          // 更新 UI
+          btn.classList.add('liked')
+          const icon = btn.querySelector('i')
+          if (icon) icon.className = 'fa-solid fa-heart'
+          const countEl = btn.querySelector('.shuoshuo-like-count')
+          if (countEl) countEl.textContent = baseLikes + 1
         }
 
         window.shuoshuoPrevPage = () => {

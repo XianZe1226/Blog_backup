@@ -305,11 +305,11 @@ footer:
         - title: 一些别的
           item:
             - title: 图库
-              url: https://github.com/XianZe1226/img_bed
+              url: /photo/
             - title: 留言板
               url: /messageboard/
             - title: 说说
-              url: /talking/
+              url: /shuoshuo/
             - title: 友链
               url: https://luoshuitianyi.love/
     - content:
@@ -637,7 +637,7 @@ comments:
   # 如果不需要评论功能，保持为空
   # 选择：Disqus/Disqusjs/Livere/Gitalk/Valine/Waline/Utterances/Facebook Comments/Twikoo/Giscus/Remark42/Artalk
   # 两个评论系统的格式：Disqus,Waline
-  use:
+  use: Giscus
   # 按钮旁边显示评论系统名称
   text: true
   # 懒加载：评论系统将在评论元素进入浏览器视口时加载
@@ -760,11 +760,11 @@ twikoo:
 # 官方文档：https://giscus.app/
 giscus:
   # 仓库地址
-  repo:
+  repo: XianZe1226/XianZe1226.github.io
   # 仓库 ID
-  repo_id:
-  # 分类 ID
-  category_id:
+  repo_id: R_kgDOP0WWMQ
+  # 分类 ID（需要在 giscus.app 填写仓库后获取）
+  category_id: DIC_kwDOP0WWMc4DAOGo
   # 主题配置，light 为浅色主题，dark 为深色主题
   theme:
     light: light

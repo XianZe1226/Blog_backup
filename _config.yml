@@ -113,3 +113,4 @@ deploy:
   type: git
   repo: git@github.com:XianZe1226/XianZe1226.github.io.git
   branch: main
+  ignore_hidden: false
