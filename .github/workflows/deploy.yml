@@ -23,14 +23,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install theme dependencies
-        run: cd themes/butterfly && npm install
+      - name: Override config for backup site
+        run: |
+          sed -i 's|url: https://xianze1226.github.io|url: https://xianze1226.github.io/Blog_backup|' _config.yml
+          sed -i 's|href="/css/custom.css"|href="/Blog_backup/css/custom.css"|' _config.butterfly.yml
 
       - name: Clean and Generate
         run: npx hexo clean && npx hexo generate
-
-      - name: Verify generated files
-        run: ls -la public/css/ && ls -la public/js/ && ls -la public/img/
 
       - name: Deploy to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
