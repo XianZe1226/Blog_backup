@@ -17,11 +17,14 @@
 
 ```bash
 # 安装 Node.js（需要 nvm）
+source ~/.nvm/nvm.sh
 nvm use 20
 
 # 安装依赖
 npm install
 ```
+
+项目使用 npm 作为唯一包管理器，锁文件以 `package-lock.json` 为准。
 
 ### 写文章
 
@@ -67,6 +70,8 @@ git add . && git commit -m "更新说明" && git push origin main
 - `.gitignore` 不要添加 `css/`、`js/` 等排除规则，会影响 Actions 部署
 - `themes/butterfly/source/` 目录必须提交到 git，否则备份站 CSS/JS 会丢失
 - 每次部署前建议执行 `hexo clean`，避免缓存导致内容不更新
+- 不要手动修改 `Blog_pages/`，正式站只通过 `hexo deploy` 更新
+- 本地生成目录 `public/`、部署缓存 `.deploy_git/`、依赖目录 `node_modules/` 不提交
 
 ## 技术栈
 
