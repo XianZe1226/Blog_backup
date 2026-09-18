@@ -24,9 +24,6 @@
 - class_name: 友情链接
   class_desc: 亲爱的老师们
   link_list:
-    - name: 丛雨老师
-      link: https://luoshuitianyi.love/
-      avatar: https://luoshuitianyi.love/img/Murasame-icon.png
     - name: starryrain
       link: https://starryrain1111.github.io/
       avatar: /images/xzz.jpg

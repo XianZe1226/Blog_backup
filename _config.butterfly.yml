@@ -311,7 +311,7 @@ footer:
             - title: 说说
               url: /shuoshuo/
             - title: 友链
-              url: https://luoshuitianyi.love/
+              url: /link/
     - content:
         - title: 框架
           item:
